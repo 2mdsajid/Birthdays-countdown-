@@ -1,0 +1,324 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timer</title>
+
+  <script src="jquery.js"></script>
+  <script src="bdaydata.js" type="text/javascript" charset="utf-8"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      background: #27272C;
+      color: #FFFFFF;
+    }
+
+    .main {
+      width: 98%;
+      margin: 25px auto;
+      height: 600px;
+      border: solid 1px #000000;
+    }
+
+    .timers2 {
+      border: solid 0px #FF0752;
+      height: 450px;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      overflow-y: scroll;
+      border-top: solid 1px #161619;
+      border-bottom: solid 1px #161619;
+      margin-top: 10px;
+    }
+
+    .profile {
+      width: 48%;
+      max-width: 170px;
+      height: 200px;
+      background: #25252BF;
+      margin: 3px;
+      text-align: center;
+      border: solid 1px #000000;
+    }
+
+    .profile div {
+      background: #25252B;
+      font-size: .75em;
+      margin: 2px 2px;
+    }
+
+    .profile img {
+      width: 80%;
+      border: solid 1px #10154E;
+      margin: 5px auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    #bday_count {
+      border: solid 1px #FFFFFF;
+    }
+
+    .intro {
+
+      width: 100%;
+      border-top: solid 0px #1C1C23;
+      margin: 5px auto;
+      padding: 3px;
+    }
+
+    p {
+      padding: 0px 2px;
+      font-size: .8em;
+      text-align: center;
+    }
+
+    .title {
+      text-align: center;
+      text-decoration: underline;
+      font-weight: bold;
+      padding: 2px 0;
+      margin: 5px 0px;
+      font-size: 1.2em;
+    }
+    .inp{
+      width: 100%;
+      display:flex;
+      justify-content: center;
+      padding: 5px 0px;
+    }
+    input {
+      height: 30px;
+      width: 200px;
+      border: solid 1px #000000;
+      outline: none;
+      padding: 3px;
+      font-size: .9em;
+    }
+    .dsk{
+      display: none;
+    }
+    
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .main{
+        display: none;
+      }
+      .dsk{
+        display:block;
+      }
+    }
+    
+  </style>
+</head>
+
+<body>
+
+<div class="dsk">(PLEASE REDUCE THE BROWSER WIDTH TO VIEW THIS SITE)</div>
+  <div class="main" id="box">
+
+    <p class="title">MCOMS-20 BIRTHDAYS</p>
+    
+    
+    <div class="intro">
+      <p>Welcome to official birthdays countdown site for Manipal Batch-2020</p>
+      <br>
+      <p>(If your birthday is not here then please let me know, I'd love to add it on my website  haha :) )</p>
+      
+      <!--
+      <p>Things to be added in future :</p>
+      <p>. Searchable profiles</p>
+      <p>. SMS sender on the day of birthday</p>
+      <p>. Expandable profiles (profiles expand on clicking them)</p>
+      <p>. A special note for everyone (from me)</p>
+      <p>. & a profile pic ofc XD </p>
+      <br>
+      <p>( if you're birthday is not here means I didn't have your birth date & also if you want yours to be removed tell me )</p>
+      -->
+    </div>
+    <div class="inp"><input placeholder="Search Your Name" type="text"></div>
+
+    <div class="timers2"></div>
+
+  </div>
+
+
+
+  <script>
+    birthdayData = data
+
+    //SECONDS FORMATTING
+    //COPIED FROM answered Nov 7, 2011 at 21:46
+    //Rob W
+    function n(n) {
+      return n > 9 ? "" + n : "0" + n;
+    }
+
+    //GET RANDOM HOURS 
+    function getRandom(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+
+
+
+
+    function getTimes(counte, now) {
+
+      var timeleft = counte - now;
+
+      var yr = Math.floor(timeleft / (1000 * 60 * 60 * 24 * 30 * 12));
+      var mon = Math.floor((timeleft % (1000 * 60 * 60 * 24 * 30 * 12)) /
+        (1000 * 60 * 60 * 24 * 30));
+      //var day = Math.floor((timeleft % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24));
+      var day = Math.floor(timeleft / (60 * 60 * 24 * 1000))
+      var hrs = Math.floor((timeleft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      var min = Math.floor((timeleft % (1000 * 60 * 60)) / (1000 * 60));
+      var sec = Math.floor((timeleft % (1000 * 60)) / 1000);
+
+      sec = n(sec)
+
+      return [yr, mon, day, hrs, min, sec]
+
+    }
+
+    //CHECK IF DATE HAS GONE OR TO COME
+    function checkPastDate(day) {
+
+      var currentDate = new Date()
+      currentYear = currentDate.getFullYear()
+      currentMon = currentDate.getMonth()
+      currentDay = currentDate.getDate()
+
+
+      rndmHr = getRandom(1, 5)
+      rndmMin = getRandom(1, 59)
+      rndmSec = getRandom(1, 59)
+
+      var birthDate = new Date(day + ", " + (currentYear) + " 00:01:00")
+      bdayMon = birthDate.getMonth()
+      bdayDay = birthDate.getDate()
+
+
+      if (bdayMon < currentMon) {
+        birthDate = new Date(day + ", " + (currentYear + 1) + " 00:00:00")
+      } else if (bdayMon == currentMon && bdayDay < currentDay) {
+        birthDate = new Date(day + ", " + (currentYear + 1) + " 00:00:00")
+      } else if (bdayMon == currentMon && bdayDay == currentDay) {
+        birthDate = currentDate
+      }
+
+      return [birthDate, currentDate]
+
+    }
+
+    function getSec(arr) {
+      secs = checkPastDate(arr.bday)
+      arr['sec'] = secs[0].getTime() - secs[1].getTime()
+      return arr
+    }
+
+
+    for (i = 0; i < birthdayData.length; i++) {
+      birthdayData[i] = getSec(birthdayData[i])
+    }
+
+    birthdayData.sort((a, b) => {
+      return a.sec - b.sec;
+    });
+
+
+    i = 0
+    birthdayData.forEach((data) => {
+
+      el = `<div class="profile t${i}">
+      <img src="/photos/timeline/unk.jpg" class="p-img" alt="">
+      <div class="name">${data.name}</div>
+      <div class="bday">BD : ${data.bday}</div>
+      <div id="bday_count" class="bday_counter${i}"></div>
+      </div>`
+      $('.timers2').append(el)
+      i++
+
+
+    })
+
+    bdayPerson = $('.timers2').children()
+
+    //SEARCHABLE ALGORITHM
+
+    
+    $("input").on("input", function() {
+      var a = []
+      var sProfiles = []
+      txt = $('input').val()
+      
+      for (i = 0; i < bdayPerson.length; i++) {
+        
+        if ($($(bdayPerson[i]).children()[1]).text().startsWith(' '+txt)){
+          sProfiles.push(bdayPerson[i])
+        }
+       
+      }
+      
+      $('.timers2').html('')
+      for (profile of sProfiles){
+        $('.timers2').append(profile)
+      }
+      
+      //console.log(a)
+      //console.log(snames)
+      
+
+
+    });
+
+
+    //SEARCHABLE ALGORITHM ENDS
+
+    var bdays = []
+    var bday_counter = []
+    for (i = 0; i < bdayPerson.length; i++) {
+      bdays.push($($(bdayPerson[i]).children()[2]).text())
+      bday_counter.push($($(bdayPerson[i]).children()[3]).attr('class'))
+    }
+
+
+    var myfunc = setInterval(function() {
+
+      for (let i = 0; i < bdays.length; i++) {
+
+        //APPROACH 2 FOR GONE BDAYS
+        var day = bdays[i]
+
+
+        //FUNCTION
+
+        dates = checkPastDate(day)
+
+        //FUNCTION
+
+
+        times = getTimes(dates[0].getTime(), dates[1].getTime())
+
+        birthDaysLeft = times[2]
+        birthHrsLeft = times[3]
+        birthMinLeft = times[4]
+        birthSecLeft = times[5]
+
+        $('.' + bday_counter[i]).text(`${birthDaysLeft}D   ${birthHrsLeft}H ${birthMinLeft}M ${birthSecLeft}S`)
+
+      }
+
+
+
+    }, 1000);
+  </script>
+
+
+</body>
+
+</html>
